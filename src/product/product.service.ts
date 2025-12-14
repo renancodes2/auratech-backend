@@ -11,9 +11,12 @@ export class ProductService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
   async createProduct(file: Express.Multer.File, data: CreateProductDto) {
+    let deleteImage: string | null = null;
     try {
       const createImage: UploadApiResponse =
         (await this.cloudinaryService.upload(file)) as UploadApiResponse;
+
+      deleteImage = createImage.public_id;
 
       if (!createImage) return;
 
@@ -34,6 +37,9 @@ export class ProductService {
 
       return create;
     } catch (err) {
+      if (deleteImage) {
+        await this.cloudinaryService.delete(deleteImage);
+      }
       throw new HttpException(
         'Failed to create product',
         HttpStatus.BAD_REQUEST,

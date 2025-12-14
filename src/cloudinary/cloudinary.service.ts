@@ -14,4 +14,13 @@ export class CloudinaryService {
       throw err;
     }
   }
+
+  async delete(public_id: string) {
+    try {
+      await this.cloudinary.cloudinary.uploader.destroy(public_id);
+    } catch (err) {
+      this.logger.error('Error delete image', err);
+      throw err;
+    }
+  }
 }
