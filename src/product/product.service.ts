@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { CloudinaryResponse } from 'src/cloudinary/cloudinary-response.interface';
+import { UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class ProductService {
@@ -12,26 +12,24 @@ export class ProductService {
   ) {}
   async createProduct(file: Express.Multer.File, data: CreateProductDto) {
     try {
-      if (!file || !file.mimetype.startsWith('image/')) {
-        throw new HttpException(
-          'File must be an image.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const urlPublic: CloudinaryResponse =
-        await this.cloudinaryService.uploadFile(file);
+      const createImage: UploadApiResponse =
+        (await this.cloudinaryService.upload(file)) as UploadApiResponse;
 
-      console.log(urlPublic);
+      if (!createImage) return;
       const create = await this.prisma.product.create({
         data: {
           name: data.name,
           description: data.description,
-          price: data.price,
-          stock: data.stock,
+          price: Number(data.price),
+          stock: Number(data.stock),
           categoryId: data.categoryId,
-          images: [urlPublic.secure_url],
+          images: createImage.public_id,
         },
       });
+
+      if (!create) {
+        throw new HttpException('', HttpStatus.BAD_REQUEST);
+      }
 
       return create;
     } catch (err) {

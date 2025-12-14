@@ -1,27 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryModule as NestjsCloudinaryModule } from 'nestjs-cloudinary';
 import { CloudinaryService } from './cloudinary.service';
 
-export const CLOUDINARY = 'Cloudinary';
-
 @Module({
-  imports: [ConfigModule],
-  providers: [
-    CloudinaryService,
-    {
-      provide: CLOUDINARY,
+  imports: [
+    ConfigModule,
+    NestjsCloudinaryModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        return cloudinary.config({
-          cloud_name: configService.get<string>('CLOUDINARY_CLOUD_NAME'),
-          api_key: configService.get<string>('CLOUDINARY_API_KEY'),
-          api_secret: configService.get<string>('CLOUDINARY_API_SECRET'),
-          secure: true,
-        });
-      },
-    },
+      useFactory: (configService: ConfigService) => ({
+        cloud_name: configService.get<string>('CLOUDINARY_CLOUD_NAME'),
+        api_key: configService.get<string>('CLOUDINARY_API_KEY'),
+        api_secret: configService.get<string>('CLOUDINARY_API_SECRET'),
+      }),
+    }),
   ],
-  exports: [CloudinaryService, CLOUDINARY],
+  providers: [CloudinaryService],
+  exports: [CloudinaryService],
 })
 export class CloudinaryModule {}
