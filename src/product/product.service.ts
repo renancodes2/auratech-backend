@@ -16,6 +16,7 @@ export class ProductService {
         (await this.cloudinaryService.upload(file)) as UploadApiResponse;
 
       if (!createImage) return;
+
       const create = await this.prisma.product.create({
         data: {
           name: data.name,
@@ -23,7 +24,7 @@ export class ProductService {
           price: Number(data.price),
           stock: Number(data.stock),
           categoryId: data.categoryId,
-          images: createImage.public_id,
+          images: [createImage.secure_url],
         },
       });
 
