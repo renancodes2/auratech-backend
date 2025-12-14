@@ -13,6 +13,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  await app.listen(process.env.PORT ?? 3333);
+  await app.listen(process.env.PORT ?? 3333).then(() => {
+    console.log(`Application is running on: ${process.env.PORT}`);
+  });
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('NestJS initialization failed:', err);
+});
