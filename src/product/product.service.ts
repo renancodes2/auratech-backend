@@ -10,6 +10,31 @@ export class ProductService {
     private readonly prisma: PrismaService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
+
+  async findAllProducts() {
+    const products = (await this.prisma.product.findMany()) ?? [];
+
+    if (!products) {
+      throw new HttpException('', HttpStatus.NOT_FOUND);
+    }
+
+    return products;
+  }
+
+  async findOneProduct(id: string) {
+    const product = await this.prisma.product.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!product) {
+      throw new HttpException('', HttpStatus.NOT_FOUND);
+    }
+
+    return product;
+  }
+
   async createProduct(file: Express.Multer.File, data: CreateProductDto) {
     let deleteImage: string | null = null;
     try {

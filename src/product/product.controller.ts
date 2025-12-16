@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -12,6 +14,16 @@ import { ProductService } from './product.service';
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
+
+  @Get()
+  findAllProducts() {
+    return this.productService.findAllProducts();
+  }
+
+  @Get(':id')
+  findOneProduct(@Param('id') id: string) {
+    return this.productService.findOneProduct(id);
+  }
 
   @UseInterceptors(FileInterceptor('file'))
   @Post()
