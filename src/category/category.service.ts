@@ -11,7 +11,6 @@ export class CategoryService {
       const create = await this.prisma.category.create({
         data: {
           name: data.name,
-          description: data.description,
         },
       });
 
