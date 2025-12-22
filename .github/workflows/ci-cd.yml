@@ -29,4 +29,6 @@ jobs:
       - name: Run Linter
         run: npm run lint
       - name: Build project
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/auratech_db
         run: npm run build
