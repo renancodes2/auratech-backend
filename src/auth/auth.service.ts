@@ -54,8 +54,12 @@ export class AuthService {
         email: user.email,
         token,
       };
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       console.error('Login Error:', errorMessage);
       throw new HttpException(
         'An unexpected error occurred during login',
@@ -76,8 +80,15 @@ export class AuthService {
         },
       });
 
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
       return user;
-    } catch (err: unknown) {
+    } catch (error: unknown) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
   }
