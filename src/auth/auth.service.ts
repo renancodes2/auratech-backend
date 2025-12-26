@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { signInDto } from './dto/sign-in.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HashingProtocol } from './hash/hashing.service';
 import { JwtService } from '@nestjs/jwt';
@@ -13,7 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async createUser(data: CreateUserDto) {
+  async signIn(data: signInDto) {
     try {
       const { email, password } = data;
 
